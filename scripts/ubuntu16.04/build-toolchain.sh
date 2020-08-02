@@ -178,6 +178,7 @@ fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/sw
 
 # FIXME: This needs to use absolute pathes?!
 #        Hm, does Homebrew tell us the target prefix? We need to use this
+# FIXME: the -sdk seems like a bug? but required
 cat > "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/destination.json" <<EOF
 {
     "version": 1,
@@ -188,7 +189,9 @@ cat > "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/destination.json" <<EOF
         "-fPIC"
     ],
     "extra-swiftc-flags": [
-        "-use-ld=lld", "-tools-directory", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin"
+        "-use-ld=lld", 
+        "-tools-directory", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
+        "-sdk", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name"
     ],
     "extra-cpp-flags": [
         "-lstdc++"
