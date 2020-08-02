@@ -5,9 +5,12 @@
 
 prefix=/usr/local
 
-VERSION=5.2.4
-BRANCH=swift-$(VERSION)-release
-SNAPSHOT=RELEASE
+VERSION=5.3
+BRANCH=swift-$(VERSION)-branch
+SNAPSHOT=DEVELOPMENT-SNAPSHOT-2020-07-31-a
+#VERSION=5.2.4
+#BRANCH=swift-$(VERSION)-release
+#SNAPSHOT=RELEASE
 
 TARGET=x86_64-unknown-linux
 ARCH=x86_64
@@ -50,10 +53,7 @@ retrieve-packages:
 	./retrieve-sdk-packages.sh
 
 build-toolchain: $(PACKAGE_FETCH_FILE)
-	./build-toolchain.sh $(PWD)/.fetch/swift-5.2.4-ubuntu16.04.tar.gz
-
-build-toolchain-5.3: $(PACKAGE_FETCH_FILE)
-	SWIFT_VERSION=5.3 ./build-toolchain.sh $(PWD)/.fetch/swift-5.3.0-ubuntu16.04.tar.gz
+	SWIFT_VERSION=$(VERSION) ./build-toolchain.sh $(PWD)/.fetch/swift-$(VERSION)-$(PLATFORM).tar.gz
 
 testbuild:
 	rm -rf my-test-app
