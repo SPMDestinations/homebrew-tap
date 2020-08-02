@@ -1,4 +1,5 @@
 .build
 .fetch
 tmp*
+my-test-app
 

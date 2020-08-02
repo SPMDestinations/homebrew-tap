@@ -5,9 +5,12 @@
 
 prefix=/usr/local
 
-VERSION=5.2.4
-BRANCH=swift-$(VERSION)-release
-SNAPSHOT=RELEASE
+VERSION=5.3
+BRANCH=swift-$(VERSION)-branch
+SNAPSHOT=DEVELOPMENT-SNAPSHOT-2020-07-31-a
+#VERSION=5.2.4
+#BRANCH=swift-$(VERSION)-release
+#SNAPSHOT=RELEASE
 
 TARGET=x86_64-unknown-linux
 ARCH=x86_64
@@ -27,6 +30,9 @@ LN_S=ln -s
 PGK_FETCHER=curl -L
 
 all: $(PACKAGE_FETCH_FILE)
+	echo "make retrieve-packages"
+	echo "make build-toolchain"
+	echo "testbuild"
 
 $(PACKAGE_FETCH_FILE):
 	$(MKDIR) -p $(FETCH_DIR)
@@ -41,3 +47,36 @@ clean:
 
 distclean: clean
 	rm -rf $(FETCH_DIR)
+
+
+retrieve-packages:
+	./retrieve-sdk-packages.sh
+
+build-toolchain: $(PACKAGE_FETCH_FILE)
+	SWIFT_VERSION=$(VERSION) ./build-toolchain.sh $(PWD)/.fetch/swift-$(VERSION)-$(PLATFORM).tar.gz
+
+testbuild:
+	rm -rf my-test-app
+	mkdir -p my-test-app && cd my-test-app && swift package init --type=executable
+	cd my-test-app && swift build --destination ../$(BUILD_DIR)/swift-$(VERSION)-$(PLATFORM).xtoolchain/destination.json
+
+DOCKER_IMAGE=swiftlang/swift:nightly-5.3-xenial
+
+# ld.so doesn't seem to be setup properly, ld.so.conf.d doesn't include
+# the `/usr/lib/swift/linux`
+testbuild-run:
+	docker run --rm -t 		\
+		--name test-x-build \
+		--volume "$(PWD)/my-test-app/.build/debug:/run" \
+		--workdir "/run" 		\
+		$(DOCKER_IMAGE) 		\
+		bash -c "LD_LIBRARY_PATH=/usr/lib/swift/linux ./my-test-app"
+
+testbuild-bash:
+	docker run --rm -it 		\
+		--name test-x-build \
+		--volume "$(PWD)/my-test-app/.build/debug:/run" \
+		--workdir "/run" 		\
+		$(DOCKER_IMAGE) 		\
+		bash
+	
