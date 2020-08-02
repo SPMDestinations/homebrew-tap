@@ -57,6 +57,15 @@ build-toolchain: $(PACKAGE_FETCH_FILE)
 
 testbuild:
 	rm -rf my-test-app
-	mkdir my-test-app && cd my-test-app && swift package init --type=executable
+	mkdir -p my-test-app && cd my-test-app && swift package init --type=executable
 	cd my-test-app && swift build --destination ../$(BUILD_DIR)/swift-$(VERSION)-$(PLATFORM).xtoolchain/destination.json
-	
+
+DOCKER_IMAGE=swiftlang/swift:nightly-5.3-xenial
+
+testbuild-run:
+	docker run --rm -t 		\
+		--name test-x-build \
+		--volume "${PWD}/my-test-app/.build/debug:/run" \
+		--workdir "/run" 		\
+		$(DOCKER_IMAGE) 		\
+		./my-test-app
