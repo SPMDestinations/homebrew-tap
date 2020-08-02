@@ -10,9 +10,21 @@
 
 set -eu
 
-BUILD_DIR=${PWD}/.build
-FETCH_DIR=${PWD}/.fetch
-CROSS_TOOLCHAIN_NAME=swift-5.2-ubuntu16.04.xtoolchain
+BUILD_DIR=${BUILD_DIR:=${PWD}/.build}
+FETCH_DIR=${FETCH_DIR:=${PWD}/.fetch}
+SWIFT_VERSION=${SWIFT_VERSION:=5.2}
+TARGET_ARCH=${TARGET_ARCH:=x86_64}
+TARGET_PLATFORM=${TARGET_PLATFORM:=ubuntu16.04}
+CROSS_TOOLCHAIN_NAME=${CROSS_TOOLCHAIN_NAME:=swift-${SWIFT_VERSION}-${TARGET_PLATFORM}.xtoolchain}
+HOST_PLATFORM=x86_64
+
+# brew install swiftxcode/swiftxcode/swift-xctoolchain-5.2
+# brew install swiftxcode/swiftxcode/clang-llvm-bin-8
+# ./retrieve-sdk-packages.sh
+HOST_SWIFT_TOOLCHAIN=/usr/local/lib/swift/xctoolchains/${HOST_PLATFORM}-apple-darwin/${SWIFT_VERSION}-current/swift.xctoolchain
+HOST_X_LLD=/usr/local/lib/swift/clang-llvm/${HOST_PLATFORM}-apple-darwin/8.0.0/bin/lld
+linux_sdk_name="${TARGET_ARCH}-${TARGET_PLATFORM}.sdk"
+LINUX_SDK="${BUILD_DIR}/${linux_sdk_name}"
 
 export PATH="/bin:/usr/bin"
 
@@ -79,14 +91,6 @@ test -f "$linux_swift_pkg"
 
 # config
 blocks_h_url="https://raw.githubusercontent.com/apple/swift-corelibs-libdispatch/master/src/BlocksRuntime/Block.h"
-linux_sdk_name="ubuntu-xenial.sdk"
-
-# brew install swiftxcode/swiftxcode/swift-xctoolchain-5.2
-# brew install swiftxcode/swiftxcode/clang-llvm-bin-8
-# ./retrieve-sdk-packages.sh
-HOST_SWIFT_TOOLCHAIN=/usr/local/lib/swift/xctoolchains/x86_64-apple-darwin/5.2-current/swift.xctoolchain
-HOST_X_LLD=/usr/local/lib/swift/clang-llvm/x86_64-apple-darwin/8.0.0/bin/lld
-LINUX_SDK="${BUILD_DIR}/${linux_sdk_name}"
 
 if ! test -d "${HOST_SWIFT_TOOLCHAIN}"; then
   echo "Missing host toolchain: ${HOST_SWIFT_TOOLCHAIN}"; exit 1

@@ -10,6 +10,8 @@
 
 BUILD_DIR=${PWD}/.build
 FETCH_DIR=${PWD}/.fetch
+TARGET_ARCH=${TARGET_ARCH:=x86_64}
+TARGET_PLATFORM=${TARGET_PLATFORM:=ubuntu16.04}
 
 set -eu
 
@@ -18,7 +20,7 @@ export PATH="/bin:/usr/bin"
 # set -xv
 
 # config
-linux_sdk_name="ubuntu-xenial.sdk"
+linux_sdk_name="${TARGET_ARCH}-${TARGET_PLATFORM}.sdk"
 ubuntu_mirror="http://gb.archive.ubuntu.com/ubuntu"
 packages_file="$ubuntu_mirror/dists/xenial/main/binary-amd64/Packages.gz"
 pkg_names=( libc6-dev linux-libc-dev libicu55 libgcc-5-dev libicu-dev libc6 libgcc1 libstdc++-5-dev libstdc++6 zlib1g-dev libpq5 libpq-dev libedit2 libedit-dev libsqlite3-dev libxml2 libxml2-dev libncurses5 libncurses5-dev libcurl4 libcurl4-openssl-dev libssl1.1 libssl-dev)

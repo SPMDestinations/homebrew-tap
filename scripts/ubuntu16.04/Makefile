@@ -27,6 +27,9 @@ LN_S=ln -s
 PGK_FETCHER=curl -L
 
 all: $(PACKAGE_FETCH_FILE)
+	echo "make retrieve-packages"
+	echo "make build-toolchain"
+	echo "testbuild"
 
 $(PACKAGE_FETCH_FILE):
 	$(MKDIR) -p $(FETCH_DIR)
@@ -46,9 +49,11 @@ distclean: clean
 retrieve-packages:
 	./retrieve-sdk-packages.sh
 
-build-toolchain:
-	./build-toolchain.sh $(HOME)/Downloads/swift-$(VERSION)-$(SNAPSHOT)-$(PLATFORM).tar.gz
+build-toolchain: $(PACKAGE_FETCH_FILE)
+	./build-toolchain.sh $(PWD)/.fetch/swift-5.2.4-ubuntu16.04.tar.gz
 
+build-toolchain-5.3: $(PACKAGE_FETCH_FILE)
+	SWIFT_VERSION=5.3 ./build-toolchain.sh $(PWD)/.fetch/swift-5.3.0-ubuntu16.04.tar.gz
 
 testbuild:
 	rm -rf my-test-app
