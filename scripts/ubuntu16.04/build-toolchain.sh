@@ -177,14 +177,14 @@ fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/sw
 cat > "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/destination.json" <<EOF
 {
     "version": 1,
-    "sdk": "${BUILD_DIR}/{CROSS_TOOLCHAIN_NAME}/$linux_sdk_name",
-    "toolchain-bin-dir": "${BUILD_DIR}/{CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
+    "sdk": "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name",
+    "toolchain-bin-dir": "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
     "target": "x86_64-unknown-linux",
     "extra-cc-flags": [
         "-fPIC"
     ],
     "extra-swiftc-flags": [
-        "-use-ld=lld", "-tools-directory", "${BUILD_DIR}/{CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin"
+        "-use-ld=lld", "-tools-directory", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin"
     ],
     "extra-cpp-flags": [
         "-lstdc++"
