@@ -62,10 +62,21 @@ testbuild:
 
 DOCKER_IMAGE=swiftlang/swift:nightly-5.3-xenial
 
+# ld.so doesn't seem to be setup properly, ld.so.conf.d doesn't include
+# the `/usr/lib/swift/linux`
 testbuild-run:
 	docker run --rm -t 		\
 		--name test-x-build \
-		--volume "${PWD}/my-test-app/.build/debug:/run" \
+		--volume "$(PWD)/my-test-app/.build/debug:/run" \
 		--workdir "/run" 		\
 		$(DOCKER_IMAGE) 		\
-		./my-test-app
+		bash -c "LD_LIBRARY_PATH=/usr/lib/swift/linux ./my-test-app"
+
+testbuild-bash:
+	docker run --rm -it 		\
+		--name test-x-build \
+		--volume "$(PWD)/my-test-app/.build/debug:/run" \
+		--workdir "/run" 		\
+		$(DOCKER_IMAGE) 		\
+		bash
+	
