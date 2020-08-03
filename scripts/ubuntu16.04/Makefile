@@ -12,17 +12,21 @@ SNAPSHOT=DEVELOPMENT-SNAPSHOT-2020-07-31-a
 #BRANCH=swift-$(VERSION)-release
 #SNAPSHOT=RELEASE
 
-TARGET=x86_64-unknown-linux
 ARCH=x86_64
+TARGET=$(ARCH)-unknown-linux
+LINUX_TARGET_TRIPLE=$(ARCH)-linux-gnu
 PLATFORM=ubuntu16.04
 PACKAGE_URL=https://swift.org/builds/$(BRANCH)/$(subst .,,$(PLATFORM))/swift-$(VERSION)-$(SNAPSHOT)/swift-$(VERSION)-$(SNAPSHOT)-$(PLATFORM).tar.gz
 	
-BUILD_DIR=.build
-FETCH_DIR=.fetch
+BUILD_DIR=$(PWD)/.build
+FETCH_DIR=$(PWD)/.fetch
 
 DESTDIR_PREFIX=$(prefix)/lib/swift/sdks/
 PACKAGE_FETCH_FILENAME=swift-$(VERSION)-$(PLATFORM).tar.gz
 PACKAGE_FETCH_FILE=$(FETCH_DIR)/$(PACKAGE_FETCH_FILENAME)
+
+APT_REPOSITORY_URL=http://de.archive.ubuntu.com/ubuntu
+APT_PACKAGES_FILE_URL=$(APT_REPOSITORY_URL)/dists/xenial/main/binary-amd64/Packages.gz
 
 MKDIR=mkdir
 CP=cp
@@ -49,8 +53,27 @@ distclean: clean
 	rm -rf $(FETCH_DIR)
 
 
+# package download
+
+PACKAGE_NAMES = \
+	libc6-dev linux-libc-dev libicu55 libgcc-5-dev libicu-dev \
+	libc6 libgcc1 libstdc++-5-dev libstdc++6 zlib1g-dev \
+	libpq5 libpq-dev libedit2 libedit-dev libsqlite3-dev \
+	libxml2 libxml2-dev libncurses5 libncurses5-dev \
+	libcurl4 libcurl4-openssl-dev libssl1.1 libssl-dev
+
 retrieve-packages:
-	./retrieve-sdk-packages.sh
+	BUILD_DIR=$(BUILD_DIR) FETCH_DIR=$(FETCH_DIR)	\
+	TARGET_ARCH=$(ARCH)				\
+	TARGET_TRIPLE=$(LINUX_TARGET_TRIPLE)		\
+	TARGET_PLATFORM=$(PLATFORM)			\
+	TARGET_SDK_NAME=$(ARCH)-$(PLATFORM).sdk 	\
+	APT_REPOSITORY_URL=$(APT_REPOSITORY_URL)	\
+	APT_PACKAGES_FILE_URL=$(APT_PACKAGES_FILE_URL)	\
+	./retrieve-sdk-packages.sh "$(PACKAGE_NAMES)"
+
+
+# toolchain builder
 
 build-toolchain: $(PACKAGE_FETCH_FILE)
 	SWIFT_VERSION=$(VERSION) ./build-toolchain.sh $(PWD)/.fetch/swift-$(VERSION)-$(PLATFORM).tar.gz

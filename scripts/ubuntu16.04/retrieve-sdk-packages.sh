@@ -6,12 +6,19 @@
 # by Johannes Weiß
 # Adjustments by Helge Heß <me@helgehess.eu>
 
-# This script fetches the packages from the upstream Linux distribution.
+# This script fetches Debian packages from the upstream Linux distribution.
+# Arguments: Package names
 
 BUILD_DIR=${PWD}/.build
 FETCH_DIR=${PWD}/.fetch
 TARGET_ARCH=${TARGET_ARCH:=x86_64}
+TARGET_TRIPLE="${TARGET_ARCH}-linux-gnu"
 TARGET_PLATFORM=${TARGET_PLATFORM:=ubuntu16.04}
+TARGET_SDK_NAME=${TARGET_SDK_NAME:="${TARGET_ARCH}-${TARGET_PLATFORM}.sdk"}
+APT_REPOSITORY_URL=${APT_REPOSITORY_URL:="http://gb.archive.ubuntu.com/ubuntu"}
+APT_PACKAGES_FILE_URL=${APT_PACKAGES_FILE_URL:="${APT_REPOSITORY_URL}/dists/xenial/main/binary-amd64/Packages.gz"}
+
+IFS=', ' read -r -a pkg_names <<< "$1"
 
 set -eu
 
@@ -20,10 +27,6 @@ export PATH="/bin:/usr/bin"
 # set -xv
 
 # config
-linux_sdk_name="${TARGET_ARCH}-${TARGET_PLATFORM}.sdk"
-ubuntu_mirror="http://gb.archive.ubuntu.com/ubuntu"
-packages_file="$ubuntu_mirror/dists/xenial/main/binary-amd64/Packages.gz"
-pkg_names=( libc6-dev linux-libc-dev libicu55 libgcc-5-dev libicu-dev libc6 libgcc1 libstdc++-5-dev libstdc++6 zlib1g-dev libpq5 libpq-dev libedit2 libedit-dev libsqlite3-dev libxml2 libxml2-dev libncurses5 libncurses5-dev libcurl4 libcurl4-openssl-dev libssl1.1 libssl-dev)
 pkgs=()
 
 
@@ -77,8 +80,8 @@ function unpack() {
 
 # ******************* Switch to target directory *******************
 
-rm -rf   "${BUILD_DIR}/${linux_sdk_name}"
-mkdir -p "${BUILD_DIR}/${linux_sdk_name}"
+rm -rf   "${BUILD_DIR}/${TARGET_SDK_NAME}"
+mkdir -p "${BUILD_DIR}/${TARGET_SDK_NAME}"
 
 # This is downloading the packages in `pkg_names`,
 # first ist fetchs the packages file.
@@ -88,13 +91,13 @@ while read -r line; do
         if [[ "$line" =~ ^Filename:\ (.*\/([^/_]+)_.*$) ]]; then
             # echo "${BASH_REMATCH[2]}"
             if [[ "${BASH_REMATCH[2]}" == "$pkg_name" ]]; then
-                new_pkg="$ubuntu_mirror/${BASH_REMATCH[1]}"
+                new_pkg="$APT_REPOSITORY_URL/${BASH_REMATCH[1]}"
                 pkgs+=( "$new_pkg" )
                 echo "- will download $new_pkg"
             fi
         fi
     done
-done < <(download_stdout "$packages_file" | gunzip -d -c | grep ^Filename:)
+done < <(download_stdout "$APT_PACKAGES_FILE_URL" | gunzip -d -c | grep ^Filename:)
 
 # Loop over the packages we want to fetch, and unpack them
 tmp=$(mktemp -d "${BUILD_DIR}/tmp_pkgs_XXXXXX")
@@ -103,7 +106,7 @@ cd "$tmp"
 for f in "${pkgs[@]}"; do
     name="$(basename "$f")"
     archive="$(download_with_cache "$f" "$name")"
-    unpack "${BUILD_DIR}/$linux_sdk_name" "$archive"
+    unpack "${BUILD_DIR}/$TARGET_SDK_NAME" "$archive"
 done
 )
 rm -rf "$tmp"
@@ -112,15 +115,16 @@ rm -rf "$tmp"
 cd $BUILD_DIR
 
 # fix absolute symlinks
-find "$linux_sdk_name" -type l | while read -r line; do
+find "$TARGET_SDK_NAME" -type l | while read -r line; do
     dst=$(readlink "$line")
     if [[ "${dst:0:1}" = / ]]; then
         rm "$line"
-        fixedlink=$(echo "./$(dirname "${line#${linux_sdk_name}/}")" | sed 's:/[^/]*:/..:g')"${dst}"
+        fixedlink=$(echo "./$(dirname "${line#${TARGET_SDK_NAME}/}")" | sed 's:/[^/]*:/..:g')"${dst}"
         echo ln -s "${fixedlink#./}" "${line#./}"
         ln -s "${fixedlink#./}" "${line#./}"
     fi
 done
-ln -s 5 "$linux_sdk_name/usr/lib/gcc/x86_64-linux-gnu/5.4.0"
 
+# TBD: 16.04 specific?
+ln -s 5 "$TARGET_SDK_NAME/usr/lib/gcc/${TARGET_TRIPLE}/5.4.0"
 )
