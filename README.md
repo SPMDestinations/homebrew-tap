@@ -12,7 +12,7 @@ brew tap SPMDestinations/tap
 brew install host-lld-bin-8 swift-xctoolchain-5.3
 ```
 
-THe full binary clang/llvm toolchain are also provided via
+The full binary clang/llvm toolchain is also provided via
 `brew install clang-llvm-bin-8` (BIG).
 
 ### Who

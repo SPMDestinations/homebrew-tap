@@ -12,7 +12,7 @@
 BUILD_DIR=${PWD}/.build
 FETCH_DIR=${PWD}/.fetch
 TARGET_ARCH=${TARGET_ARCH:=x86_64}
-TARGET_TRIPLE="${TARGET_ARCH}-linux-gnu"
+LINUX_TARGET_TRIPLE="${TARGET_ARCH}-linux-gnu"
 TARGET_PLATFORM=${TARGET_PLATFORM:=ubuntu16.04}
 TARGET_SDK_NAME=${TARGET_SDK_NAME:="${TARGET_ARCH}-${TARGET_PLATFORM}.sdk"}
 APT_REPOSITORY_URL=${APT_REPOSITORY_URL:="http://gb.archive.ubuntu.com/ubuntu"}
@@ -83,6 +83,8 @@ function unpack() {
 rm -rf   "${BUILD_DIR}/${TARGET_SDK_NAME}"
 mkdir -p "${BUILD_DIR}/${TARGET_SDK_NAME}"
 
+
+echo "Fetching download URLs for packages ..."
 # This is downloading the packages in `pkg_names`,
 # first ist fetchs the packages file.
 # weissi: Oopsie, this is slow but seemingly fast enough :)
@@ -99,6 +101,8 @@ while read -r line; do
     done
 done < <(download_stdout "$APT_PACKAGES_FILE_URL" | gunzip -d -c | grep ^Filename:)
 
+
+echo "Download and unpack packages into ${BUILD_DIR}/${TARGET_SDK_NAME} ..."
 # Loop over the packages we want to fetch, and unpack them
 tmp=$(mktemp -d "${BUILD_DIR}/tmp_pkgs_XXXXXX")
 (
@@ -106,11 +110,13 @@ cd "$tmp"
 for f in "${pkgs[@]}"; do
     name="$(basename "$f")"
     archive="$(download_with_cache "$f" "$name")"
-    unpack "${BUILD_DIR}/$TARGET_SDK_NAME" "$archive"
+    unpack "${BUILD_DIR}/${TARGET_SDK_NAME}" "$archive"
 done
 )
 rm -rf "$tmp"
 
+
+echo "Fixing absolute links in ${BUILD_DIR}/${TARGET_SDK_NAME} ..."
 (
 cd $BUILD_DIR
 
@@ -126,5 +132,5 @@ find "$TARGET_SDK_NAME" -type l | while read -r line; do
 done
 
 # TBD: 16.04 specific?
-ln -s 5 "$TARGET_SDK_NAME/usr/lib/gcc/${TARGET_TRIPLE}/5.4.0"
+ln -s 5 "$TARGET_SDK_NAME/usr/lib/gcc/${LINUX_TARGET_TRIPLE}/5.4.0"
 )

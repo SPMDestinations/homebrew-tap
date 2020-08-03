@@ -1,0 +1,29 @@
+class SpmDest53Ubuntu1604 < Formula
+  
+  desc "An Ubuntu 16.04 (Xenial) cross compilation toolchain for Swift 5.3-2020-07-31-a"
+  homepage "https://github.com/SPMDestinations/homebrew-tap"
+  url "https://swift.org/builds/swift-5.3-branch/ubuntu1604/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a-ubuntu16.04.tar.gz"
+  sha256 "56457054578913a691c3998d7c5583a4bf950d6d32b9d7a37281c1eb8a3b24c6"
+
+  # the respective things are cloned into the X toolchain, hence only required
+  # at build time.
+  depends_on "spmdestinations/tap/swift-xctoolchain-5.3" => [:build]
+  depends_on "spmdestinations/tap/host-lld-bin-8"   => [:build, :recommended]
+  depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
+
+  patch do
+    url "https://helgehess.eu/patches/build-ubuntu16.04-5.3.patch"
+    sha256 "f2fc6e6e43145047e5b7e5eadcc8718386fde76255af099e8a656d0b831b0147"
+    # curl -L https://helgehess.eu/patches/build-ubuntu16.04-5.3.patch | shasum -a 256
+  end
+  
+  def install
+    ENV.deparallelize
+    system "chmod", "+x", "build-toolchain.sh"
+    system "chmod", "+x", "retrieve-sdk-packages.sh"
+    system "make", \
+           "prefix=#{prefix}", \
+           "ACTUAL_DESTINATION_PREFIX=#{HOMEBREW_PREFIX}", \
+           "install"
+  end
+end
