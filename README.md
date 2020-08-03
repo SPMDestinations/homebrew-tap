@@ -6,7 +6,7 @@
 What is this? It's a set of Homebrew formulas (installation packages) to install
 (and build) Swift cross compilers hosted on macOS.
 For example it allows you to build a Swift Package Manager package on macOS,
-but for Ubuntu Linux. W/o running builds in Docker.
+but for Ubuntu Linux. Without running anything in Docker.
 
 End of April 2017
 [Johannes Weiß](https://github.com/weissi)
@@ -22,16 +22,17 @@ SPMDestinations splits up the original script into multiple parts and provides
 the results as Homebrew formulas. This way Homebrew can cache components which
 are reused for different toolchains, and the installation is much easier.
 
-NOTE: Thanks to [SR-13312](https://bugs.swift.org/browse/SR-13312) this requires
-      a Swift 5.3 installation (e.g. Xcode 12beta) on the host system.
-      It may work with older Swift 5.x versions, but doesn't w/ 5.2.4
+NOTE: Thanks to [SR-13312](https://bugs.swift.org/browse/SR-13312) this 
+      **requires** a **Swift 5.3** installation (e.g. Xcode 12beta) on the host 
+      system.
+      It may work with older Swift 5.x versions, but doesn't work with 5.2.4
       (the current Xcode 11 version).
 
 
 ## Toolchain Installation
 
 SPMDestinations requires [Homebrew](https://brew.sh),
-get it at [over here](https://brew.sh)
+get it [over here](https://brew.sh).
 
 Currently one cross compilation toolchain is provided (stay tuned):
 - Swift 5.3 Dev Snapshot, Ubuntu Xenial (16.04), x86_64
@@ -70,9 +71,9 @@ swift build --destination \
 The built product can be found in `.build` as usual:
 ```shell
 file .build/debug/macro-test
-.build/debug/macro-test: \
-  ELF 64-bit LSB shared object, x86-64, \
-  version 1 (SYSV), dynamically linked, \
+.build/debug/macro-test:                   \
+  ELF 64-bit LSB shared object, x86-64,    \
+  version 1 (SYSV), dynamically linked,    \
   interpreter /lib64/ld-linux-x86-64.so.2, \
   for GNU/Linux 2.6.32, with debug_info, not stripped
 ```
@@ -80,21 +81,27 @@ file .build/debug/macro-test
 To actually test whether it works, it can be copied over to an actual Linux
 machine, or run within Docker:
 ```shell
-docker run --rm -t 		\
-		--name test-x-build \
-		--volume "${PWD}/.build/debug:/run" \
-		--workdir "/run" 		\
-		swiftlang/swift:nightly-5.3-xenial \
-		bash -c "LD_LIBRARY_PATH=/usr/lib/swift/linux ./macro-test"
+docker run --rm -t                    \
+  --name test-x-build                 \
+  --volume "${PWD}/.build/debug:/run" \
+  --workdir "/run"                    \
+  swiftlang/swift:nightly-5.3-xenial  \
+  bash -c "LD_LIBRARY_PATH=/usr/lib/swift/linux ./macro-test"
 Hello, world!
 ```
-> The LD_LIBRARY_PATH is b0rked in the `nightly-5.3-xenial` Docker image.
+> The LD_LIBRARY_PATH is b0rked in the `nightly-5.3-xenial` Docker image
+> (doesn't include /usr/lib/swift/linux),
+> hence the explicit setting.
 
 
 ## Dev Installation
 
-When building own toolchains, one always wants to use a Swift host toolchain,
-and for Linux the LLVM linker (lld) is usually required.
+When building own toolchains a Swift host toolchain is usually required.
+Plus for Linux targets the LLVM linker (lld).
+This project provides formulas for both.
+
+> They don't do much but grab the toolchains from swift.org and put them into a
+> specific Brew directory. The advantage is that Brew does all the caching.
 
 ```shell
 brew tap SPMDestinations/tap
