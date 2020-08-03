@@ -158,8 +158,11 @@ fi
 
 # TBD: does this have absolute links?
 # fix up glibc modulemap
+# TBD: weissi was patching the host compiler, we also(?) need to patch the
+#      target (https://github.com/SPMDestinations/homebrew-tap/issues/1)
 echo "Fixing glibc modulemap"
 fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift/linux/x86_64/glibc.modulemap"
+fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift/linux/x86_64/glibc.modulemap"
 
 # FIXME: This needs to use absolute pathes?!
 #        Hm, does Homebrew tell us the target prefix? We need to use this

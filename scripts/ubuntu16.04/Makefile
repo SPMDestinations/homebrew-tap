@@ -115,6 +115,9 @@ testbuild:
 	mkdir -p my-test-app && cd my-test-app && swift package init --type=executable
 	cd my-test-app && swift build --destination $(BUILD_DIR)/swift-$(VERSION)-$(PLATFORM).xtoolchain/destination.json
 
+test-rebuild:
+	cd my-test-app && swift build --destination $(BUILD_DIR)/swift-$(VERSION)-$(PLATFORM).xtoolchain/destination.json
+
 DOCKER_IMAGE=swiftlang/swift:nightly-5.3-xenial
 
 # ld.so doesn't seem to be setup properly, ld.so.conf.d doesn't include

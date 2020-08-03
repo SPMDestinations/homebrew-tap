@@ -1,6 +1,6 @@
 diff -ruN empty/Makefile patched/Makefile
 --- empty/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ patched/Makefile	2020-08-03 15:58:12.000000000 +0200
++++ patched/Makefile	2020-08-03 16:12:05.000000000 +0200
 @@ -0,0 +1,88 @@
 +# Makefile
 +#
@@ -92,8 +92,8 @@ diff -ruN empty/Makefile patched/Makefile
 +	./build-toolchain.sh
 diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 --- empty/build-toolchain.sh	1970-01-01 01:00:00.000000000 +0100
-+++ patched/build-toolchain.sh	2020-08-03 15:50:30.000000000 +0200
-@@ -0,0 +1,188 @@
++++ patched/build-toolchain.sh	2020-08-03 17:29:34.000000000 +0200
+@@ -0,0 +1,191 @@
 +#!/bin/bash
 +#
 +# Based on
@@ -254,8 +254,11 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +
 +# TBD: does this have absolute links?
 +# fix up glibc modulemap
++# TBD: weissi was patching the host compiler, we also(?) need to patch the
++#      target (https://github.com/SPMDestinations/homebrew-tap/issues/1)
 +echo "Fixing glibc modulemap"
 +fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift/linux/x86_64/glibc.modulemap"
++fix_glibc_modulemap "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift/linux/x86_64/glibc.modulemap"
 +
 +# FIXME: This needs to use absolute pathes?!
 +#        Hm, does Homebrew tell us the target prefix? We need to use this
@@ -284,7 +287,7 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +echo "  ${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}"
 diff -ruN empty/retrieve-sdk-packages.sh patched/retrieve-sdk-packages.sh
 --- empty/retrieve-sdk-packages.sh	1970-01-01 01:00:00.000000000 +0100
-+++ patched/retrieve-sdk-packages.sh	2020-08-03 15:31:46.000000000 +0200
++++ patched/retrieve-sdk-packages.sh	2020-08-03 16:12:05.000000000 +0200
 @@ -0,0 +1,136 @@
 +#!/bin/bash
 +#
