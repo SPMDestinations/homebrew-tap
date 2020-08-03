@@ -1,59 +1,65 @@
 diff -ruN empty/Makefile patched/Makefile
 --- empty/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ patched/Makefile	2020-08-03 14:44:42.000000000 +0200
-@@ -0,0 +1,76 @@
++++ patched/Makefile	2020-08-03 15:58:12.000000000 +0200
+@@ -0,0 +1,88 @@
 +# Makefile
 +#
 +# Created by Helge Heß
 +# Copyright © 2020 ZeeZide GmbH. All rights reserved.
 +
++# This script variant expects an unarchived target Swift toolchain in $PWD,
++# i.e. `usr` (with bin, include, lib, local, share)
++
 +prefix=/usr/local
 +
-+DESTINATION_PREFIX=/usr/local
-+REL_INSTALL_PATH=lib/swift/destinations
++# This is required because we need to hardcode the destination.json to the
++# actual location.
++ACTUAL_DESTINATION_PREFIX=/usr/local
 +
-+VERSION=5.3
-+BRANCH=swift-$(VERSION)-branch
-+SNAPSHOT=DEVELOPMENT-SNAPSHOT-2020-07-31-a
++SWIFT_VERSION=5.3
 +
-+ARCH=x86_64
-+TARGET=$(ARCH)-unknown-linux
-+LINUX_TARGET_TRIPLE=$(ARCH)-linux-gnu
++TARGET_ARCH=x86_64
++TARGET_TRIPLE=$(TARGET_ARCH)-unknown-linux
++LINUX_TARGET_TRIPLE=$(TARGET_ARCH)-linux-gnu
 +PLATFORM=ubuntu16.04
-+PACKAGE_URL=https://swift.org/builds/$(BRANCH)/$(subst .,,$(PLATFORM))/swift-$(VERSION)-$(SNAPSHOT)/swift-$(VERSION)-$(SNAPSHOT)-$(PLATFORM).tar.gz
 +	
 +BUILD_DIR=$(PWD)/.build
 +FETCH_DIR=$(PWD)/.fetch
 +
-+DESTDIR_PREFIX=$(prefix)/lib/swift/sdks/
-+PACKAGE_FETCH_FILENAME=swift-$(VERSION)-$(PLATFORM).tar.gz
-+PACKAGE_FETCH_FILE=$(FETCH_DIR)/$(PACKAGE_FETCH_FILENAME)
++DESTDIR_RELAPTH=lib/swift/dst/$(TARGET_TRIPLE)
++DESTDIR_PREFIX=$(prefix)/$(DESTDIR_RELAPTH)
++INSTALL_PREFIX=$(ACTUAL_DESTINATION_PREFIX)/$(DESTDIR_RELAPTH)
 +
 +APT_DISTRIBUTION_NAME=xenial
 +APT_PLATFORM=amd64
 +APT_REPOSITORY_URL=http://de.archive.ubuntu.com/ubuntu
 +APT_PACKAGES_FILE_URL=$(APT_REPOSITORY_URL)/dists/$(APT_DISTRIBUTION_NAME)/main/binary-$(APT_PLATFORM)/Packages.gz
 +
++CROSS_TOOLCHAIN_NAME=swift-$(SWIFT_VERSION)-$(PLATFORM).xtoolchain
++
++# The packages we want in the SDK. Those should be as many as possible, so
++# that arbitrary software can be built.
++# (In case that turns out to be an issue, we can always do separate packages
++#  later).
 +PACKAGE_NAMES = \
-+	libc6-dev linux-libc-dev libicu55 libgcc-5-dev libicu-dev \
-+	libc6 libgcc1 libstdc++-5-dev libstdc++6 zlib1g-dev \
-+	libpq5 libpq-dev libedit2 libedit-dev libsqlite3-dev \
-+	libxml2 libxml2-dev libncurses5 libncurses5-dev \
++	libc6 libc6-dev linux-libc-dev libicu55 libicu-dev	\
++	libgcc1 libgcc-5-dev libstdc++6 libstdc++-5-dev 	\
++	zlib1g-dev libedit2 libedit-dev 			\
++	libpq5 libpq-dev libsqlite3-dev				\
++	libxml2 libxml2-dev libncurses5 libncurses5-dev		\
 +	libcurl4 libcurl4-openssl-dev libssl1.1 libssl-dev
 +
 +MKDIR=mkdir
 +CP=cp
++CLONE=cp -ac
 +LN_S=ln -s
 +
 +all: retrieve-packages build-toolchain
 +
-+$(PACKAGE_FETCH_FILE):
-+	$(MKDIR) -p $(FETCH_DIR)
-+	(if ! test -f $@; then $(PGK_FETCHER) -o $@ $(PACKAGE_URL); fi)
-+
-+install:
-+	echo TODO
-+	exit 42
++install: all
++	$(MKDIR) -p $(DESTDIR_PREFIX)
++	$(CLONE) $(BUILD_DIR)/$(CROSS_TOOLCHAIN_NAME) \
++	         $(DESTDIR_PREFIX)/$(CROSS_TOOLCHAIN_NAME)
 +
 +clean:
 +	rm -rf $(BUILD_DIR)
@@ -65,23 +71,29 @@ diff -ruN empty/Makefile patched/Makefile
 +
 +retrieve-packages:
 +	BUILD_DIR=$(BUILD_DIR) FETCH_DIR=$(FETCH_DIR)	\
-+	TARGET_ARCH=$(ARCH)				\
++	TARGET_ARCH=$(TARGET_ARCH)			\
 +	LINUX_TARGET_TRIPLE=$(LINUX_TARGET_TRIPLE)	\
 +	TARGET_PLATFORM=$(PLATFORM)			\
-+	TARGET_SDK_NAME=$(ARCH)-$(PLATFORM).sdk 	\
++	TARGET_SDK_NAME=$(TARGET_ARCH)-$(PLATFORM).sdk 	\
 +	APT_REPOSITORY_URL=$(APT_REPOSITORY_URL)	\
 +	APT_PACKAGES_FILE_URL=$(APT_PACKAGES_FILE_URL)	\
 +	./retrieve-sdk-packages.sh "$(PACKAGE_NAMES)"
 +
-+
 +# toolchain builder
 +
 +build-toolchain: $(PACKAGE_FETCH_FILE)
-+	SWIFT_VERSION=$(VERSION) ./build-toolchain.sh $(PWD)/.fetch/swift-$(VERSION)-$(PLATFORM).tar.gz
++	BUILD_DIR=$(BUILD_DIR) FETCH_DIR=$(FETCH_DIR)	\
++	SWIFT_VERSION=$(SWIFT_VERSION) 			\
++	TARGET_ARCH=$(TARGET_ARCH)			\
++	TARGET_PLATFORM=$(PLATFORM)			\
++	CROSS_TOOLCHAIN_NAME=$(CROSS_TOOLCHAIN_NAME)	\
++	HOST_PLATFORM=$(uname -m)			\
++	INSTALL_PREFIX=$(INSTALL_PREFIX)		\
++	./build-toolchain.sh
 diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 --- empty/build-toolchain.sh	1970-01-01 01:00:00.000000000 +0100
-+++ patched/build-toolchain.sh	2020-08-03 13:10:16.000000000 +0200
-@@ -0,0 +1,211 @@
++++ patched/build-toolchain.sh	2020-08-03 15:50:30.000000000 +0200
+@@ -0,0 +1,188 @@
 +#!/bin/bash
 +#
 +# Based on
@@ -100,7 +112,10 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +TARGET_ARCH=${TARGET_ARCH:=x86_64}
 +TARGET_PLATFORM=${TARGET_PLATFORM:=ubuntu16.04}
 +CROSS_TOOLCHAIN_NAME=${CROSS_TOOLCHAIN_NAME:=swift-${SWIFT_VERSION}-${TARGET_PLATFORM}.xtoolchain}
-+HOST_PLATFORM=x86_64
++HOST_PLATFORM=${HOST_PLATFORM:=x86_64}
++
++# must be specified:
++#INSTALL_PREFIX=${INSTALL_PREFIX:=/usr/local/lib/swift/dst/${TARGET_ARCH}-unknown-linux}
 +
 +# brew install swiftxcode/swiftxcode/swift-xctoolchain-5.2
 +# brew install swiftxcode/swiftxcode/clang-llvm-bin-8
@@ -169,10 +184,6 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +
 +# set -xv # for debugging
 +
-+# where to get stuff from
-+linux_swift_pkg=$(realpath "$1") # this is going to be automatic
-+test -f "$linux_swift_pkg"
-+
 +# config
 +blocks_h_url="https://raw.githubusercontent.com/apple/swift-corelibs-libdispatch/master/src/BlocksRuntime/Block.h"
 +
@@ -185,20 +196,6 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +if ! test -x "${HOST_X_LLD}"; then
 +  echo "Missing LLD: ${HOST_X_LLD}"; exit 1
 +fi
-+
-+
-+# ************************* HELPER ***********************
-+
-+# url, key
-+function download_with_cache() {
-+    mkdir -p "$FETCH_DIR"
-+    local out
-+    out="$FETCH_DIR/$2"
-+    if [[ ! -f "$out" ]]; then
-+        curl --fail -s -o "$out" "$1"
-+    fi
-+    echo "$out"
-+}
 +
 +
 +# ************************* RUN **************************
@@ -227,31 +224,23 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +
 +# swift.xctoolchain/usr/lib/swift_static/linux
 +# swift.xctoolchain/usr/lib/swift/linux
-+echo "Coping in headers/libs from target Swift toolchain: ${linux_swift_pkg} ..."
-+(
-+# FIXME: just tar xvf over the right location
-+tmp=$(mktemp -d "${BUILD_DIR}/tmp_pkgs_XXXXXX")
-+tar -C "$tmp" --strip-components 1 -xf "$linux_swift_pkg"
-+
++echo "Coping in headers/libs from target Swift toolchain ..."
 +echo "  .. Linux Swift libs/mods into host toolchain ..."
-+cp -ac "$tmp/usr/lib/swift/linux"          "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift/linux"
++cp -ac "usr/lib/swift/linux"          "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift/linux"
 +mkdir -p "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift_static"
-+cp -ac "$tmp/usr/lib/swift_static/linux"   "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift_static/linux"
++cp -ac "usr/lib/swift_static/linux"   "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/lib/swift_static/linux"
 +
 +echo "  .. Linux Swift libs/mods into target toolchain ..."
 +mkdir -p "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift"
 +mkdir -p "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift_static"
-+cp -ac "$tmp/usr/lib/swift/linux"          "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift/linux"
-+cp -ac "$tmp/usr/lib/swift_static/linux"   "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift_static/linux"
++cp -ac "usr/lib/swift/linux"          "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift/linux"
++cp -ac "usr/lib/swift_static/linux"   "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/lib/swift_static/linux"
 +
 +echo "  .. Linux Swift libs/mods into host toolchain ..."
-+cp -ac "$tmp/usr/lib/swift/dispatch"       "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/dispatch"
-+cp -ac "$tmp/usr/lib/swift/CoreFoundation" "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/CoreFoundation"
-+cp -ac "$tmp/usr/lib/swift/os"             "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/os"
-+rm -rf "$tmp"
-+
++cp -ac "usr/lib/swift/dispatch"       "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/dispatch"
++cp -ac "usr/lib/swift/CoreFoundation" "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/CoreFoundation"
++cp -ac "usr/lib/swift/os"             "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name/usr/include/os"
 +echo "  ok."
-+)
 +
 +
 +echo "Fetching/Installing Block.h ..."
@@ -274,16 +263,16 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +cat > "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/destination.json" <<EOF
 +{
 +    "version": 1,
-+    "sdk": "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name",
-+    "toolchain-bin-dir": "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
++    "sdk": "${INSTALL_PREFIX}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name",
++    "toolchain-bin-dir": "${INSTALL_PREFIX}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
 +    "target": "x86_64-unknown-linux",
 +    "extra-cc-flags": [
 +        "-fPIC"
 +    ],
 +    "extra-swiftc-flags": [
 +        "-use-ld=lld", 
-+        "-tools-directory", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
-+        "-sdk", "${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name"
++        "-tools-directory", "${INSTALL_PREFIX}/${CROSS_TOOLCHAIN_NAME}/$xc_tc_name/usr/bin",
++        "-sdk", "${INSTALL_PREFIX}/${CROSS_TOOLCHAIN_NAME}/$linux_sdk_name"
 +    ],
 +    "extra-cpp-flags": [
 +        "-lstdc++"
@@ -295,8 +284,8 @@ diff -ruN empty/build-toolchain.sh patched/build-toolchain.sh
 +echo "  ${BUILD_DIR}/${CROSS_TOOLCHAIN_NAME}"
 diff -ruN empty/retrieve-sdk-packages.sh patched/retrieve-sdk-packages.sh
 --- empty/retrieve-sdk-packages.sh	1970-01-01 01:00:00.000000000 +0100
-+++ patched/retrieve-sdk-packages.sh	2020-08-03 14:49:54.000000000 +0200
-@@ -0,0 +1,130 @@
++++ patched/retrieve-sdk-packages.sh	2020-08-03 15:31:46.000000000 +0200
+@@ -0,0 +1,136 @@
 +#!/bin/bash
 +#
 +# Based on
@@ -382,6 +371,8 @@ diff -ruN empty/retrieve-sdk-packages.sh patched/retrieve-sdk-packages.sh
 +rm -rf   "${BUILD_DIR}/${TARGET_SDK_NAME}"
 +mkdir -p "${BUILD_DIR}/${TARGET_SDK_NAME}"
 +
++
++echo "Fetching download URLs for packages ..."
 +# This is downloading the packages in `pkg_names`,
 +# first ist fetchs the packages file.
 +# weissi: Oopsie, this is slow but seemingly fast enough :)
@@ -398,6 +389,8 @@ diff -ruN empty/retrieve-sdk-packages.sh patched/retrieve-sdk-packages.sh
 +    done
 +done < <(download_stdout "$APT_PACKAGES_FILE_URL" | gunzip -d -c | grep ^Filename:)
 +
++
++echo "Download and unpack packages into ${BUILD_DIR}/${TARGET_SDK_NAME} ..."
 +# Loop over the packages we want to fetch, and unpack them
 +tmp=$(mktemp -d "${BUILD_DIR}/tmp_pkgs_XXXXXX")
 +(
@@ -405,11 +398,13 @@ diff -ruN empty/retrieve-sdk-packages.sh patched/retrieve-sdk-packages.sh
 +for f in "${pkgs[@]}"; do
 +    name="$(basename "$f")"
 +    archive="$(download_with_cache "$f" "$name")"
-+    unpack "${BUILD_DIR}/$TARGET_SDK_NAME" "$archive"
++    unpack "${BUILD_DIR}/${TARGET_SDK_NAME}" "$archive"
 +done
 +)
 +rm -rf "$tmp"
 +
++
++echo "Fixing absolute links in ${BUILD_DIR}/${TARGET_SDK_NAME} ..."
 +(
 +cd $BUILD_DIR
 +

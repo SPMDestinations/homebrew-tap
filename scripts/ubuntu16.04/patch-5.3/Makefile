@@ -3,53 +3,59 @@
 # Created by Helge Heß
 # Copyright © 2020 ZeeZide GmbH. All rights reserved.
 
+# This script variant expects an unarchived target Swift toolchain in $PWD,
+# i.e. `usr` (with bin, include, lib, local, share)
+
 prefix=/usr/local
 
-DESTINATION_PREFIX=/usr/local
-REL_INSTALL_PATH=lib/swift/destinations
+# This is required because we need to hardcode the destination.json to the
+# actual location.
+ACTUAL_DESTINATION_PREFIX=/usr/local
 
-VERSION=5.3
-BRANCH=swift-$(VERSION)-branch
-SNAPSHOT=DEVELOPMENT-SNAPSHOT-2020-07-31-a
+SWIFT_VERSION=5.3
 
-ARCH=x86_64
-TARGET=$(ARCH)-unknown-linux
-LINUX_TARGET_TRIPLE=$(ARCH)-linux-gnu
+TARGET_ARCH=x86_64
+TARGET_TRIPLE=$(TARGET_ARCH)-unknown-linux
+LINUX_TARGET_TRIPLE=$(TARGET_ARCH)-linux-gnu
 PLATFORM=ubuntu16.04
-PACKAGE_URL=https://swift.org/builds/$(BRANCH)/$(subst .,,$(PLATFORM))/swift-$(VERSION)-$(SNAPSHOT)/swift-$(VERSION)-$(SNAPSHOT)-$(PLATFORM).tar.gz
 	
 BUILD_DIR=$(PWD)/.build
 FETCH_DIR=$(PWD)/.fetch
 
-DESTDIR_PREFIX=$(prefix)/lib/swift/sdks/
-PACKAGE_FETCH_FILENAME=swift-$(VERSION)-$(PLATFORM).tar.gz
-PACKAGE_FETCH_FILE=$(FETCH_DIR)/$(PACKAGE_FETCH_FILENAME)
+DESTDIR_RELAPTH=lib/swift/dst/$(TARGET_TRIPLE)
+DESTDIR_PREFIX=$(prefix)/$(DESTDIR_RELAPTH)
+INSTALL_PREFIX=$(ACTUAL_DESTINATION_PREFIX)/$(DESTDIR_RELAPTH)
 
 APT_DISTRIBUTION_NAME=xenial
 APT_PLATFORM=amd64
 APT_REPOSITORY_URL=http://de.archive.ubuntu.com/ubuntu
 APT_PACKAGES_FILE_URL=$(APT_REPOSITORY_URL)/dists/$(APT_DISTRIBUTION_NAME)/main/binary-$(APT_PLATFORM)/Packages.gz
 
+CROSS_TOOLCHAIN_NAME=swift-$(SWIFT_VERSION)-$(PLATFORM).xtoolchain
+
+# The packages we want in the SDK. Those should be as many as possible, so
+# that arbitrary software can be built.
+# (In case that turns out to be an issue, we can always do separate packages
+#  later).
 PACKAGE_NAMES = \
-	libc6-dev linux-libc-dev libicu55 libgcc-5-dev libicu-dev \
-	libc6 libgcc1 libstdc++-5-dev libstdc++6 zlib1g-dev \
-	libpq5 libpq-dev libedit2 libedit-dev libsqlite3-dev \
-	libxml2 libxml2-dev libncurses5 libncurses5-dev \
+	libc6 libc6-dev linux-libc-dev libicu55 libicu-dev	\
+	libgcc1 libgcc-5-dev libstdc++6 libstdc++-5-dev 	\
+	zlib1g-dev libedit2 libedit-dev 			\
+	libpq5 libpq-dev libsqlite3-dev				\
+	libxml2 libxml2-dev libncurses5 libncurses5-dev		\
 	libcurl4 libcurl4-openssl-dev libssl1.1 libssl-dev
 
 MKDIR=mkdir
 CP=cp
+CLONE=cp -ac
 LN_S=ln -s
 
 all: retrieve-packages build-toolchain
 
-$(PACKAGE_FETCH_FILE):
-	$(MKDIR) -p $(FETCH_DIR)
-	(if ! test -f $@; then $(PGK_FETCHER) -o $@ $(PACKAGE_URL); fi)
-
-install:
-	echo TODO
-	exit 42
+install: all
+	$(MKDIR) -p $(DESTDIR_PREFIX)
+	$(CLONE) $(BUILD_DIR)/$(CROSS_TOOLCHAIN_NAME) \
+	         $(DESTDIR_PREFIX)/$(CROSS_TOOLCHAIN_NAME)
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -61,16 +67,22 @@ distclean: clean
 
 retrieve-packages:
 	BUILD_DIR=$(BUILD_DIR) FETCH_DIR=$(FETCH_DIR)	\
-	TARGET_ARCH=$(ARCH)				\
+	TARGET_ARCH=$(TARGET_ARCH)			\
 	LINUX_TARGET_TRIPLE=$(LINUX_TARGET_TRIPLE)	\
 	TARGET_PLATFORM=$(PLATFORM)			\
-	TARGET_SDK_NAME=$(ARCH)-$(PLATFORM).sdk 	\
+	TARGET_SDK_NAME=$(TARGET_ARCH)-$(PLATFORM).sdk 	\
 	APT_REPOSITORY_URL=$(APT_REPOSITORY_URL)	\
 	APT_PACKAGES_FILE_URL=$(APT_PACKAGES_FILE_URL)	\
 	./retrieve-sdk-packages.sh "$(PACKAGE_NAMES)"
 
-
 # toolchain builder
 
 build-toolchain: $(PACKAGE_FETCH_FILE)
-	SWIFT_VERSION=$(VERSION) ./build-toolchain.sh $(PWD)/.fetch/swift-$(VERSION)-$(PLATFORM).tar.gz
+	BUILD_DIR=$(BUILD_DIR) FETCH_DIR=$(FETCH_DIR)	\
+	SWIFT_VERSION=$(SWIFT_VERSION) 			\
+	TARGET_ARCH=$(TARGET_ARCH)			\
+	TARGET_PLATFORM=$(PLATFORM)			\
+	CROSS_TOOLCHAIN_NAME=$(CROSS_TOOLCHAIN_NAME)	\
+	HOST_PLATFORM=$(uname -m)			\
+	INSTALL_PREFIX=$(INSTALL_PREFIX)		\
+	./build-toolchain.sh
