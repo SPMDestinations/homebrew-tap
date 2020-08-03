@@ -12,8 +12,8 @@ class SpmDest53X8664Ubuntu1604 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/build-ubuntu16.04-5.3.patch"
-    sha256 "f2fc6e6e43145047e5b7e5eadcc8718386fde76255af099e8a656d0b831b0147"
+    url "https://helgehess.eu/patches/build-ubuntu16.04-5.3-p1.patch"
+    sha256 "df6a8ae28d7485b28565200cc0acacbf3d4b9bf216e11d58571bfca5d602a92b"
     # curl -L https://helgehess.eu/patches/build-ubuntu16.04-5.3.patch | shasum -a 256
   end
   
