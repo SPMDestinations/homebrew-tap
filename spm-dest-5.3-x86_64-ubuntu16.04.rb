@@ -7,7 +7,7 @@ class SpmDest53X8664Ubuntu1604 < Formula
   
   version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a"
   version_scheme 1
-  revision 5
+  revision 6
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
@@ -16,8 +16,8 @@ class SpmDest53X8664Ubuntu1604 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/build-ubuntu16.04-5.3-p5.patch"
-    sha256 "8abe8d666cf3dbe82500daf4e619dd06227c7179b4ccb01aca6f3a4ed8543342"
+    url "https://helgehess.eu/patches/build-ubuntu16.04-5.3-p6.patch"
+    sha256 "4999891eda8b8b91407e0388e4a95a21bfd32c20b62b7be96b7d7e70dffa1178"
   end
   
   def install
