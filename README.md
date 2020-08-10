@@ -34,8 +34,10 @@ NOTE: Thanks to [SR-13312](https://bugs.swift.org/browse/SR-13312) this
 SPMDestinations requires [Homebrew](https://brew.sh),
 get it [over here](https://brew.sh).
 
-Currently one cross compilation toolchain is provided (stay tuned):
+Currently those cross compilation toolchains are provided:
 - Swift 5.3 Dev Snapshot, Ubuntu Xenial (16.04), x86_64
+- Swift 5.2.5, Ubuntu Xenial (16.04), x86_64
+- Swift 5.2.5, AmazonLinux2, x86_64
 
 > Note that the required toolchains are quite big (~500MB compressed each, for
 > host and target system).
