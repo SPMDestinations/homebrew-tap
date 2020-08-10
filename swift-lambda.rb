@@ -15,6 +15,6 @@ class SwiftLambda < Formula
   depends_on "jq"
   
   def install
-    system "make", "install"
+    system "make", "prefix=#{prefix}", "install"
   end
 end
