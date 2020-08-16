@@ -8,7 +8,7 @@ class SpmDest53X8664Amazonlinux2 < Formula
 
   version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a"
   version_scheme 1
-  revision 2
+  revision 3
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
@@ -17,8 +17,8 @@ class SpmDest53X8664Amazonlinux2 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/build-amazonlinux2-5.3-p1.patch"
-    sha256 "19d9e82c42923055eb52c2dafc098ca87aa7b8b25160cc7f7c7b918a8f19568c"
+    url "https://helgehess.eu/patches/build-amazonlinux2-5.3-p2.patch"
+    sha256 "f57e5bd826f3c7b84d7203c99b798997b2dc26f1083b3760c4e763b9ad0b9d92"
   end
   
   def install
