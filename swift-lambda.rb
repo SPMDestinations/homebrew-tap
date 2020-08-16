@@ -8,9 +8,10 @@ class SwiftLambda < Formula
 
   version "0.1.0"
   version_scheme 1
-  revision 1
+  revision 2
   
-  depends_on "spmdestinations/tap/spm-dest-5.2-x86_64-amazonlinux2"
+  depends_on "spmdestinations/tap/spm-dest-5.3-x86_64-amazonlinux2"
+  depends_on "spmdestinations/tap/spm-dest-5.2-x86_64-amazonlinux2" => [:optional]
   depends_on "awscli"
   depends_on "jq"
   
