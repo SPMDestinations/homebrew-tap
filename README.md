@@ -36,8 +36,9 @@ get it [over here](https://brew.sh).
 
 Currently those cross compilation toolchains are provided:
 - Swift 5.3 Dev Snapshot, Ubuntu Xenial (16.04), x86_64
+- Swift 5.3 Dev Snapshot, Amazon Linux 2, x86_64
 - Swift 5.2.5, Ubuntu Xenial (16.04), x86_64
-- Swift 5.2.5, AmazonLinux2, x86_64
+- Swift 5.2.5, Amazon Linux 2, x86_64
 
 > Note that the required toolchains are quite big (~500MB compressed each, for
 > host and target system).
