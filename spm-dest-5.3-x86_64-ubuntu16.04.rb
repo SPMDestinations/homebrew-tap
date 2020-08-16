@@ -1,13 +1,14 @@
 class SpmDest53X8664Ubuntu1604 < Formula
   
-  desc "An Ubuntu 16.04 (Xenial) cross compilation toolchain for Swift 5.3-2020-07-31-a"
+  desc "An Ubuntu 16.04 (Xenial) cross compilation toolchain for Swift 5.3-2020-08-15-a"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
-  url "https://swift.org/builds/swift-5.3-branch/ubuntu1604/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a-ubuntu16.04.tar.gz"
-  sha256 "56457054578913a691c3998d7c5583a4bf950d6d32b9d7a37281c1eb8a3b24c6"
+  url "https://swift.org/builds/swift-5.3-branch/ubuntu1604/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a-ubuntu16.04.tar.gz"
+  # curl -L https://swift.org/builds/swift-5.3-branch/ubuntu1604/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a-ubuntu16.04.tar.gz | shasum -a 256
+  sha256 "d698c7d7c0f8d7dc2f137280244a0fdcd6b8497d0c3a073bbac5050ff9c88d14"
   
-  version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-07-31-a"
+  version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a"
   version_scheme 1
-  revision 6
+  revision 7
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
