@@ -18,7 +18,7 @@ class SpmDest53X8664Amazonlinux2 < Formula
 
   patch do
     url "https://helgehess.eu/patches/amazonlinux2-5.3-2020-09-11-2.patch"
-    sha256 "035a572fd366eb87663b8ef61314963a46cd6c6194ecbbbc80fb0fa7e3c7d57a"
+    sha256 "d6d42319e878bb482cd5bb61a619594096e14157b78a3b9bde204db6c0186526"
   end
   
   def install
