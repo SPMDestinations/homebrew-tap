@@ -1,14 +1,14 @@
 class SpmDest53X8664Amazonlinux2 < Formula
 
-  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3-2020-08-15-a"
+  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3-2020-09-09-a"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
-  url "https://swift.org/builds/swift-5.3-branch/amazonlinux2/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a-amazonlinux2.tar.gz"
-  # curl -L https://swift.org/builds/swift-5.3-branch/amazonlinux2/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a-amazonlinux2.tar.gz | shasum -a 256
-  sha256 "cfb18f6f0e72a96f17be6178dcdc21fe0b942b480cf46ff0565e70afb0eb986e"
+  url "https://swift.org/builds/swift-5.3-branch/amazonlinux2/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-09-09-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-09-09-a-amazonlinux2.tar.gz"
+  # curl -L https://swift.org/builds/swift-5.3-branch/amazonlinux2/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-09-09-a/swift-5.3-DEVELOPMENT-SNAPSHOT-2020-09-09-a-amazonlinux2.tar.gz | shasum -a 256
+  sha256 "aa63427c590764fa471fe9edb88cabdcb000655a48206f90224f62246a7b56ac"
 
-  version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-08-15-a"
+  version "swift-5.3-DEVELOPMENT-SNAPSHOT-2020-09-09-a"
   version_scheme 1
-  revision 3
+  revision 4
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
@@ -17,8 +17,8 @@ class SpmDest53X8664Amazonlinux2 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/build-amazonlinux2-5.3-p2.patch"
-    sha256 "f57e5bd826f3c7b84d7203c99b798997b2dc26f1083b3760c4e763b9ad0b9d92"
+    url "https://helgehess.eu/patches/amazonlinux2-5.3-2020-09-11-2.patch"
+    sha256 "035a572fd366eb87663b8ef61314963a46cd6c6194ecbbbc80fb0fa7e3c7d57a"
   end
   
   def install
