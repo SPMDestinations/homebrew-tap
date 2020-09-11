@@ -16,7 +16,7 @@ class SpmDest52X8664Amazonlinux2 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/amazonlinux2-5.2-2020-09-11-1.patch"
+    url "https://helgehess.eu/patches/build-amazonlinux2-5.2-2020-09-11-1.patch"
     sha256 "cea1d995a9ecd37d3c03c99d50919461c6746925fba09c44b6266c949fdab36b"
   end
   
