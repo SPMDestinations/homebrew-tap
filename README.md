@@ -23,11 +23,8 @@ the results as Homebrew formulas. This way Homebrew can cache components which
 are reused for different toolchains, and the installation is much easier.
 
 NOTE: Thanks to [SR-13312](https://bugs.swift.org/browse/SR-13312) this 
-      **requires** a **Swift 5.3** installation (e.g. Xcode 12beta) on the host 
+      **requires** a **Swift 5.3** installation (e.g. Xcode 12) on the host 
       system.
-      It may work with older Swift 5.x versions, but doesn't work with 5.2.4
-      (the current Xcode 11 version).
-
 
 ## Toolchain Installation
 
@@ -35,8 +32,8 @@ SPMDestinations requires [Homebrew](https://brew.sh),
 get it [over here](https://brew.sh).
 
 Currently those cross compilation toolchains are provided:
-- Swift 5.3 Dev Snapshot, Ubuntu Xenial (16.04), x86_64
-- Swift 5.3 Dev Snapshot, Amazon Linux 2, x86_64
+- Swift 5.3, Ubuntu Xenial (16.04), x86_64
+- Swift 5.3, Amazon Linux 2, x86_64
 - Swift 5.2.5, Ubuntu Xenial (16.04), x86_64
 - Swift 5.2.5, Amazon Linux 2, x86_64
 
