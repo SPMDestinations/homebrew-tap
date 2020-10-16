@@ -7,7 +7,7 @@ class SpmDest52X8664Amazonlinux2 < Formula
 
   version "5.2.5"
   version_scheme 1
-  revision 4
+  revision 5
 
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
@@ -16,8 +16,8 @@ class SpmDest52X8664Amazonlinux2 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/amazonlinux2-5.2-2020-09-11-2.patch"
-    sha256 "035a572fd366eb87663b8ef61314963a46cd6c6194ecbbbc80fb0fa7e3c7d57a"
+    url "https://helgehess.eu/patches/amazonlinux2-5.2-2020-10-16-5.patch"
+    sha256 "f8484d49372523565b7b07fb8702fb0ef66e352c0c019b3d49a446fbf05460bf"
   end
   
   def install

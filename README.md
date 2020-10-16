@@ -15,7 +15,7 @@ added
 to 
 [Swift Package Manager](https://github.com/apple/swift-package-manager).
 Johannes also provided 
-[a script](https://github.com/apple/swift-package-manager/blob/master/Utilities/build_ubuntu_cross_compilation_toolchain)
+[a script](https://github.com/apple/swift-package-manager/blob/main/Utilities/build_ubuntu_cross_compilation_toolchain)
 which shows how to build an Ubuntu toolchain for x86-64.
 
 SPMDestinations splits up the original script into multiple parts and provides
