@@ -1,14 +1,14 @@
 class SpmDest53X8664Amazonlinux2 < Formula
 
-  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3"
+  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3.1"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
-  url "https://swift.org/builds/swift-5.3-release/amazonlinux2/swift-5.3-RELEASE/swift-5.3-RELEASE-amazonlinux2.tar.gz"
-  # curl -L https://swift.org/builds/swift-5.3-release/amazonlinux2/swift-5.3-RELEASE/swift-5.3-RELEASE-amazonlinux2.tar.gz | shasum -a 256
-  sha256 "ce6eca6509031e636b9f6bbc9b1b1ccffc954a8ae34e32b8f142bbaf2353ee71"
+  url "https://swift.org/builds/swift-5.3.1-release/amazonlinux2/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-amazonlinux2.tar.gz"
+  # curl -L https://swift.org/builds/swift-5.3.1-release/amazonlinux2/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-amazonlinux2.tar.gz | shasum -a 256
+  sha256 "ebf2d981a624b353f8bb24ffcfb8a74a19959e31b6da088e32a6a8b1414839bf"
 
-  version "5.3.0"
+  version "5.3.1"
   version_scheme 2
-  revision 6
+  revision 7
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
@@ -28,6 +28,7 @@ class SpmDest53X8664Amazonlinux2 < Formula
     system "make", \
            "prefix=#{prefix}", \
            "ACTUAL_DESTINATION_PREFIX=#{HOMEBREW_PREFIX}", \
+           "SWIFT_LIB_DIR=#{HOMEBREW_PREFIX}/lib/swift", \
            "install"
   end
 end
