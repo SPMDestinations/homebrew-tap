@@ -16,6 +16,7 @@ class SwiftXctoolchain53 < Formula
     system "cd swift.xctoolchain && cat ../*.pkg/Payload | gunzip -dc | cpio -i"
     system "mkdir", "-p", "#{prefix}/lib/swift/xctoolchains/x86_64-apple-darwin/5.3.1"
     system "cp -ac swift.xctoolchain #{prefix}/lib/swift/xctoolchains/x86_64-apple-darwin/5.3.1/swift.xctoolchain"
+    system "ln", "-sf", "#{prefix}/lib/swift/xctoolchains/fat-apple-darwin/5.3.1", "#{prefix}/lib/swift/xctoolchains/x86_64-apple-darwin/5.3-current"
     system "ln", "-sf", "#{prefix}/lib/swift/xctoolchains/x86_64-apple-darwin/5.3.1", "#{prefix}/lib/swift/xctoolchains/x86_64-apple-darwin/5.3-current"
   end
 end
