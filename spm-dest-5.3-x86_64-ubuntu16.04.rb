@@ -8,7 +8,7 @@ class SpmDest53X8664Ubuntu1604 < Formula
   
   version "5.3.1"
   version_scheme 2
-  revision 11
+  revision 12
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
