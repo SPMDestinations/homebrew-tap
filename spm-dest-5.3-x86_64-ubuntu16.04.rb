@@ -1,6 +1,6 @@
 class SpmDest53X8664Ubuntu1604 < Formula
   
-  desc "An Ubuntu 16.04 (Xenial) cross compilation toolchain for Swift 5.3"
+  desc "An Ubuntu 16.04 (Xenial) cross compilation toolchain for Swift 5.3.1"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
   url "https://swift.org/builds/swift-5.3.1-release/ubuntu1604/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-ubuntu16.04.tar.gz"
   # curl -L https://swift.org/builds/swift-5.3.1-release/ubuntu1604/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-ubuntu16.04.tar.gz | shasum -a 256
