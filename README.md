@@ -53,6 +53,19 @@ ls /usr/local/lib/swift/dst/x86_64-unknown-linux/
 swift-5.3-ubuntu16.04.xtoolchain
 ```
 
+### On Apple silicon
+
+There are two ways to run [Homebrew](https://brew.sh) on Apple silicon,
+either using Rosetta in `/usr/local` (arch -x86_64 brew)
+or natively in `/opt/homebrew`.
+
+If using the native one, all is the same, for installation using
+Rosetta:
+```shell
+arch -x86_64 brew tap SPMDestinations/tap
+arch -x86_64 brew install spm-dest-5.3-x86_64-ubuntu16.04
+```
+
 ### Testing the Toolchain
 
 To build an SPM package for a different platform,
