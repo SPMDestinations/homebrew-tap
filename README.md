@@ -22,7 +22,7 @@ SPMDestinations splits up the original script into multiple parts and provides
 the results as Homebrew formulas. This way Homebrew can cache components which
 are reused for different toolchains, and the installation is much easier.
 
-NOTE: Those host system requires a Swift 5.3 installation (e.g. Xcode 12).
+NOTE: The host system requires a Swift 5.3 installation (e.g. Xcode 12).
 
 ## Toolchain Installation
 
