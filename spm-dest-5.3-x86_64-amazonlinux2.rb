@@ -1,14 +1,14 @@
 class SpmDest53X8664Amazonlinux2 < Formula
 
-  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3.1"
+  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.3.3"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
-  url "https://swift.org/builds/swift-5.3.1-release/amazonlinux2/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-amazonlinux2.tar.gz"
-  # curl -L https://swift.org/builds/swift-5.3.1-release/amazonlinux2/swift-5.3.1-RELEASE/swift-5.3.1-RELEASE-amazonlinux2.tar.gz | shasum -a 256
-  sha256 "ebf2d981a624b353f8bb24ffcfb8a74a19959e31b6da088e32a6a8b1414839bf"
+  url "https://swift.org/builds/swift-5.3.3-release/amazonlinux2/swift-5.3.3-RELEASE/swift-5.3.3-RELEASE-amazonlinux2.tar.gz"
+  # curl -L https://swift.org/builds/swift-5.3.3-release/amazonlinux2/swift-5.3.3-RELEASE/swift-5.3.3-RELEASE-amazonlinux2.tar.gz | shasum -a 256
+  sha256 "25c453511ff6707bb6fc62314b0f547f5f6c93a7e7be59c3b380f5d8ce4a4f64"
 
-  version "5.3.1"
+  version "5.3.3"
   version_scheme 2
-  revision 8
+  revision 9
   
   # the respective things are cloned into the X toolchain, hence only required
   # at build time.
