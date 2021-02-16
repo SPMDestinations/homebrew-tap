@@ -1,6 +1,6 @@
 class SpmDest52X8664Amazonlinux2 < Formula
 
-  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.2"
+  desc "An AmazonLinux2 cross compilation toolchain for Swift 5.2.5"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
   url "https://swift.org/builds/swift-5.2.5-release/amazonlinux2/swift-5.2.5-RELEASE/swift-5.2.5-RELEASE-amazonlinux2.tar.gz"
   sha256 "e827d6c451bc3abe70b4b7770411e21ffcd863c9a1d669803948216235f0fcf2"
