@@ -17,8 +17,8 @@ class SpmDest53X8664Ubuntu2004 < Formula
   depends_on "spmdestinations/tap/clang-llvm-bin-8" => [:build, :optional]
 
   patch do
-    url "https://helgehess.eu/patches/ubuntu20.04-5.3-2021-02-17-4.patch"
-    sha256 "c04d7e1d051a405057cca6a059231403a145e70a78e956679dc37694acf865b6"
+    url "https://helgehess.eu/patches/ubuntu20.04-5.3-2021-02-17-5.patch"
+    sha256 "88e3200a8deed8ea2d5644c3f8f70ea15af78b77f64eaf001411c69106d72f46"
   end
   
   def install
