@@ -1,4 +1,4 @@
-class SwiftXctoolchain53 < Formula
+class SwiftXctoolchain54 < Formula
   
   desc     "A macOS Swift 5.4 toolchain for cross compilation purposes"
   homepage "https://swift.org"
