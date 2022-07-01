@@ -1,4 +1,4 @@
-class SpmDest53X8664Amazonlinux2 < Formula
+class SpmDest54X8664Amazonlinux2 < Formula
 
   desc "An AmazonLinux2 cross compilation toolchain for Swift 5.4"
   homepage "https://github.com/SPMDestinations/homebrew-tap"

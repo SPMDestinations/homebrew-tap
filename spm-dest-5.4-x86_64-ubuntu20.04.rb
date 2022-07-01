@@ -1,4 +1,4 @@
-class SpmDest53X8664Ubuntu2004 < Formula
+class SpmDest54X8664Ubuntu2004 < Formula
   
   desc "An Ubuntu 20.04 (Focal) cross compilation toolchain for Swift 5.4"
   homepage "https://github.com/SPMDestinations/homebrew-tap"
