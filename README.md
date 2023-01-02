@@ -47,7 +47,7 @@ brew install spm-dest-5.3-x86_64-ubuntu16.04
 
 This puts the toolchain into:
 ```shell
-ls /usr/local/lib/swift/dst/x86_64-unknown-linux/
+ls ${HOMEBREW_PREFIX}/lib/swift/dst/x86_64-unknown-linux/
 swift-5.3-ubuntu16.04.xtoolchain
 ```
 
@@ -76,7 +76,7 @@ mkdir macro-test && cd macro-test
 swift package init --type=executable
 
 swift build --destination \
-  /usr/local/lib/swift/dst/x86_64-unknown-linux/swift-5.3-ubuntu16.04.xtoolchain/destination.json
+  ${HOMEBREW_PREFIX}/lib/swift/dst/x86_64-unknown-linux/swift-5.3-ubuntu16.04.xtoolchain/destination.json
 ```
 
 The built product can be found in `.build` as usual:
